@@ -5,6 +5,7 @@ import * as Permissions from "expo-permissions";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import * as WebBrowser from "expo-web-browser";
 import axios from "axios";
+
 const ID = "WVwSPjCxzQ4ncQ_j53Z5";
 const SECRET = "nDJRHH_aHP";
 
@@ -91,16 +92,18 @@ export default class CameraScreen extends React.Component {
 
   handleBarCodeScanned = ({ type, data }) => {
     this.setState({ scanned: true });
-    if (type == "org.gs1.EAN-13") {
-      axios
-        .get(`https://openapi.naver.com/v1/search/book_adv?d_isbn=${data}`, {
-          headers: {
-            "X-Naver-Client-Id": ID,
-            "X-Naver-Client-Secret": SECRET,
-          },
-        })
-        .then((res) => {
-          console.log(res.data.items);
+    axios
+      .get(`https://openapi.naver.com/v1/search/book_adv?d_isbn=${data}`, {
+        headers: {
+          "X-Naver-Client-Id": ID,
+          "X-Naver-Client-Secret": SECRET,
+        },
+      })
+      .then((res) => {
+        console.log(res.data.items);
+        if (res.data.items.length == 0) {
+          alert("유효하지 않은 issn/isbn 바코드 입니다");
+        } else {
           this.state.title = res.data.items[0].title;
           this.state.author = res.data.items[0].author;
           this.state.price = res.data.items[0].price;
@@ -108,9 +111,7 @@ export default class CameraScreen extends React.Component {
           this.state.image = res.data.items[0].image;
           this.handleFormSubmit();
           alert(`'${res.data.items[0].title}'\n 책장에 추가되었습니다.`);
-        });
-    } else {
-      alert("유효하지 않은 isbn/issn 바코드 입니다");
-    }
+        }
+      });
   };
 }
