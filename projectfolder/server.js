@@ -40,7 +40,7 @@ const connection = mysql.createConnection({
   database: conf.database,
 });
 
-app.use(cors());
+app.use(cors()); //Cross Origin Resource Sharing
 
 connection.connect();
 
