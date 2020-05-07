@@ -6,6 +6,8 @@
 -express
 -axios
 
--cors mysql
+-cors mysql 
+### API 요청이 있을 때, 막힐때 뚫어주는 것이 cors
+그러나 보안이 약해질 수 있다.
 
 react navigation: https://reactnavigation.org/docs/getting-started
