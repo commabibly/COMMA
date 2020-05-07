@@ -1,0 +1,7 @@
+{
+  "host": "comma.c6a76bjjinod.ap-northeast-2.rds.amazonaws.com",
+  "user": "admin",
+  "password": "papa6985!",
+  "port": "3306",
+  "database": "management"
+}
