@@ -25,3 +25,5 @@ npm install (머시기)
 5. 되는지 확인한다(빨간 화면이 뜰 가능성 매우 높음)
 
 react navigation: https://reactnavigation.org/docs/getting-started
+
+node server.js -수정가능
