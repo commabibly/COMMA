@@ -13,7 +13,6 @@ npm install (머시기)
 - cors
 - mysql
 
--cors mysql 
 ### API 요청이 있을 때, 막힐때 뚫어주는 것이 cors
 그러나 보안이 약해질 수 있다.
 
@@ -22,7 +21,7 @@ npm install (머시기)
 2. 프로젝트를 하나 만든다(blank 말고 tab으로 만들면 navigator를 따로 안설치해도됨)
 3. 다 만들어지면 압축폴더에 있던 파일들을 복붙한다
 4. expo start랑 node server.js를 각각 터미널로 실행한다
-5. 되는지 확인한다(빨간 화면이 뜰 가능성 매우 높음)
+5. 되는지 확인한다
 
 react navigation: https://reactnavigation.org/docs/getting-started
 
