@@ -44,20 +44,31 @@ app.use(cors()); //Cross Origin Resource Sharing
 
 connection.connect();
 
-app.get("/api/book", (req, res) => {
-  connection.query("SELECT * FROM BOOK", (err, rows, fields) => {
+app.get("/api/book/:shelf_num", (req, res) => {
+  connection.query(
+    `SELECT * FROM BOOK WHERE shelf_num=${req.query.shelf_num}`,
+    (err, rows, fields) => {
+      res.send(rows);
+    }
+  );
+});
+
+app.get("/api/shelf", (req, res) => {
+  connection.query("SELECT * FROM BookShelf", (err, rows, fields) => {
     res.send(rows);
   });
 });
 
 app.post("/api/book", (req, res) => {
-  let sql = "INSERT INTO BOOK VALUES (null, ?, ?, ?, ?, ?)";
+  let sql = "INSERT INTO BOOK VALUES (null, ?, ?, ?, ?, ?, ?, ?)";
   let image = req.body.image;
   let title = req.body.title;
   let author = req.body.author;
   let publisher = req.body.publisher;
   let price = req.body.price;
-  let params = [image, title, author, publisher, price];
+  let user_id = req.body.user_id;
+  let shelf_num = req.body.shelf_num;
+  let params = [image, title, author, publisher, price, user_id, shelf_num];
   connection.query(sql, params, (err, rows, fields) => {
     res.send(rows);
   });
