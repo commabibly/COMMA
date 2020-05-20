@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
-import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import * as WebBrowser from "expo-web-browser";
 import axios from "axios";
+import Modal from "react-native-modal";
 
 const ID = "WVwSPjCxzQ4ncQ_j53Z5";
 const SECRET = "nDJRHH_aHP";
+
+//무얼 할 것인가: 책장 선택을 누르면 저장할 책장을 선택할 수 있음
 
 export default class CameraScreen extends React.Component {
   constructor(props) {
@@ -20,6 +21,11 @@ export default class CameraScreen extends React.Component {
       price: "",
       publisher: "",
       image: "",
+      user_id: "",
+      shelf_num: "",
+      shelf_name: "",
+      isModalVisible: false,
+      shelfData: "",
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     //this.handleFileChange = this.handleFileChange.bind(this); //파일 직접 업로드 할때 필요, 아직 작성 안함
@@ -39,24 +45,37 @@ export default class CameraScreen extends React.Component {
   }
 
   addCustomer() {
-    const url = "http://172.30.1.38:3000/api/book";
+    const url = "http://192.168.219.100:3000/api/book";
     const body = {
       title: this.state.title,
       author: this.state.author,
       price: this.state.price,
       publisher: this.state.publisher,
       image: this.state.image,
+      user_id: this.state.user_id,
+      shelf_num: this.state.shelf_num,
     };
+    console.log(body);
     return axios.post(url, body);
   }
 
   async componentDidMount() {
     this.getPermissionsAsync();
+    this.getShelfData();
   }
 
   getPermissionsAsync = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === "granted" });
+  };
+
+  getShelfData = () => {
+    axios({
+      method: "get",
+      url: "http://192.168.219.100:3000/api/shelf",
+    }).then((response) => {
+      this.setState({ shelfData: response.data });
+    });
   };
 
   render() {
@@ -76,16 +95,55 @@ export default class CameraScreen extends React.Component {
           justifyContent: "flex-end",
         }}
       >
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
-        />
-        {scanned && (
-          <Button
-            title={"Tap to Scan Again"}
-            onPress={() => this.setState({ scanned: false })}
+        <View style={styles.barcode}>
+          <BarCodeScanner
+            onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
+            style={StyleSheet.absoluteFillObject}
           />
-        )}
+          <Text style={styles.text}>
+            현재 선택된 책장 : {this.state.shelf_name}
+          </Text>
+          <Button title={"책장 선택"} onPress={this.toggleModal} />
+          <Modal
+            isVisible={this.state.isModalVisible}
+            backdropOpacity={0.1}
+            onBackdropPress={this.toggleModal}
+          >
+            <View style={styles.modal}>
+              {this.state.shelfData ? (
+                this.state.shelfData.map((c, i) => {
+                  return (
+                    <Button
+                      color="#2c3e50"
+                      key={i}
+                      user_id={c.user_id}
+                      title={c.shelf_name}
+                      id={c.shelf_num}
+                      onPress={() => {
+                        this.setState({
+                          user_id: c.user_id,
+                          shelf_num: c.shelf_num,
+                          shelf_name: c.shelf_name,
+                          isModalVisible: !this.state.isModalVisible,
+                        });
+                      }}
+                    />
+                  );
+                })
+              ) : (
+                <View>
+                  <Text>책장이 없다</Text>
+                </View>
+              )}
+            </View>
+          </Modal>
+          {scanned && (
+            <Button
+              title={"Tap to Scan Again"}
+              onPress={() => this.setState({ scanned: false })}
+            />
+          )}
+        </View>
       </View>
     );
   }
@@ -100,10 +158,10 @@ export default class CameraScreen extends React.Component {
         },
       })
       .then((res) => {
-        console.log(res.data.items);
+        //console.log(res.data.items);
         if (res.data.items.length == 0) {
           alert("유효하지 않은 issn/isbn 바코드 입니다");
-        } else {
+        } else if (this.state.shelf_num != null) {
           this.state.title = res.data.items[0].title;
           this.state.author = res.data.items[0].author;
           this.state.price = res.data.items[0].price;
@@ -111,7 +169,38 @@ export default class CameraScreen extends React.Component {
           this.state.image = res.data.items[0].image;
           this.handleFormSubmit();
           alert(`'${res.data.items[0].title}'\n 책장에 추가되었습니다.`);
+        } else {
+          alert("책장이 없는 것 같다");
         }
       });
   };
+
+  handleShelfButton = () => {
+    this.toggleModal();
+  };
+
+  chooseShelf = () => {
+    console.log("책장 선택 버튼 누름");
+  };
+
+  toggleModal = () => {
+    this.setState({
+      isModalVisible: !this.state.isModalVisible,
+    });
+  };
 }
+
+const styles = StyleSheet.create({
+  barcode: {
+    flex: 10,
+  },
+  modal: {
+    backgroundColor: "white",
+  },
+  text: {
+    //backgroundColor: "black",
+    backgroundColor: "rgba(52, 52, 52, 0.5)",
+    fontSize: 15,
+    color: "white",
+  },
+});

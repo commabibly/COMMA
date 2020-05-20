@@ -1,26 +1,20 @@
+//선택된 책장을 보여주는 화면
 import * as React from "react";
 import {
   Text,
   View,
   StyleSheet,
-  Button,
   ScrollView,
   RefreshControl,
-  SafeAreaView,
 } from "react-native";
 import Books from "../components/Books";
 import axios from "axios";
-
-function wait(timeout) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, timeout);
-  });
-}
 
 export default class ShelfScreen extends React.Component {
   state = {
     books: "",
     refreshing: false,
+    shelf_num: this.props.route.params.shelf_num,
   };
 
   _onRefresh = () => {
@@ -30,22 +24,27 @@ export default class ShelfScreen extends React.Component {
       this.setState({ refreshing: false });
     });
     */
-    this.callApi().then((res) =>
+    this.axiosCall().then((res) =>
       this.setState({ refreshing: false, books: res })
     );
   };
 
   componentDidMount() {
-    this.callApi()
+    this.axiosCall()
       .then((res) => this.setState({ books: res }))
       .catch((err) => console.log(err));
   }
 
-  callApi = async () => {
-    const response = await fetch("http://172.30.1.38:3000/api/book");
-    const body = await response.json();
-    //console.log(body);
-    return body;
+  axiosCall = async () => {
+    return axios
+      .get(`http://192.168.219.100:3000/api/book/1`, {
+        params: {
+          shelf_num: this.state.shelf_num,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
   };
 
   render() {
@@ -75,6 +74,7 @@ export default class ShelfScreen extends React.Component {
         ) : (
           <View style={styles.container}>
             <Text style={styles.text}>책을 불러오고 있어요.</Text>
+            <Text style={styles.text}>오래 걸리면 인터넷 확인해라</Text>
           </View>
         )}
       </ScrollView>
