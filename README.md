@@ -8,6 +8,7 @@ npm install (머시기)
 - express //web framework
 - axios //rest api 쓰기 편하게 하기 위함
 - expo-barcode-scanner //바코드 스캐너
+- react-native-modal //modal(팝업창 같은거)
 
 서버
 - cors
