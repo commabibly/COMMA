@@ -1,23 +1,31 @@
 import * as React from "react";
 import { Text, StyleSheet, View, Image } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 class Books extends React.Component {
+  constructor(props) {
+    super(props);
+    //console.log(this.props);
+  }
+
   render() {
     return (
-      <View style={styles.background}>
-        <View style={styles.image}>
-          <Image
-            style={{ width: 60, height: 80 }}
-            source={{ uri: this.props.image }}
-          />
+      <TouchableOpacity>
+        <View style={styles.background}>
+          <View style={styles.image}>
+            <Image
+              style={{ width: 60, height: 80 }}
+              source={{ uri: this.props.image }}
+            />
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{this.props.title}</Text>
+            <Text style={styles.text}>{this.props.author}</Text>
+            <Text style={styles.text}>{this.props.publisher}</Text>
+            <Text style={styles.text}>{this.props.price}₩</Text>
+          </View>
         </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>{this.props.title}</Text>
-          <Text style={styles.text}>{this.props.author}</Text>
-          <Text style={styles.text}>{this.props.publisher}</Text>
-          <Text style={styles.text}>{this.props.price}₩</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     );
   }
 }
