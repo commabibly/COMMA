@@ -53,8 +53,22 @@ app.get("/api/book/:shelf_num", (req, res) => {
   );
 });
 
-app.get("/api/shelf", (req, res) => {
-  connection.query("SELECT * FROM BookShelf", (err, rows, fields) => {
+app.get("/api/shelf/:id", (req, res) => {
+  const id = req.query.user_id;
+  connection.query(
+    `SELECT * FROM BookShelf WHERE user_id="${id}"`,
+    (err, rows, fields) => {
+      res.send(rows);
+    }
+  );
+});
+
+app.post("/api/shelf", (req, res) => {
+  const sql = "INSERT INTO BookShelf VALUES (?, null, ?)";
+  const id = req.query.user_id;
+  const shelf_name = req.query.shelf_name;
+  const params = [id, shelf_name];
+  connection.query(sql, params, (err, rows, fields) => {
     res.send(rows);
   });
 });
@@ -74,4 +88,53 @@ app.post("/api/book", (req, res) => {
   });
 });
 
+app.post("/api/sign", (req, res) => {
+  console.log(req.body.data.pass);
+  let sql =
+    "SELECT * FROM register WHERE ID='" +
+    req.body.data.email +
+    "' and private_key='" +
+    req.body.data.pass +
+    "'";
+  let email = req.body.data.email;
+  let password = req.body.data.pass;
+  //let usernameRegex = /^[a-z0-9]+$/;
+  let params = [email, password];
+  console.log(params);
+
+  connection.query(sql, params, (err, rows, fields) => {
+    if (err) {
+      throw err;
+    }
+    if (rows.length > 0) {
+      console.log(rows[0].ID);
+      return res.json({ loginresult: true, name: rows[0].ID });
+    } else {
+      console.log("f3");
+      return res.send({ loginresult: false });
+    }
+  });
+});
+app.post("/api/register", (req, res) => {
+  let sql = "INSERT INTO register VALUES (?,?)";
+  let email2 = req.body.email2;
+  let password2 = req.body.password2;
+  //let usernameRegex = /^[a-z0-9]+$/;
+  let params = [email2, password2];
+  console.log(params);
+
+  connection.query(sql, params, (err, rows, fields) => {
+    if (!err) {
+      res.send("success");
+      console.log("not error");
+    } else {
+      console.log("error");
+      return res.status(400).json({
+        // HTTP 요청에 대한 리스폰스 (json 형식으로)
+        error: "duplicate EMAIL",
+        code: 1,
+      });
+    }
+  });
+});
 app.listen(port, () => console.log(`Listening on port ${port}`));

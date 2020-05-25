@@ -15,15 +15,26 @@ import BottomTabNavigator from "./navigation/BottomTabNavigator";
 import useLinking from "./navigation/useLinking";
 import LoginScreen from "./screens/LoginScreen";
 import AuthContext from "./hooks/AuthContext";
+import IDContext from "./hooks/IDContext";
+import SignUpScreen from "./screens/SignUpScreen.js";
 
 const Stack = createStackNavigator();
+const Home = createStackNavigator();
+
+function HomeStack() {
+  return (
+    <Home.Navigator screenOptions={{ headerShown: false }}>
+      <Home.Screen name="Login" component={LoginScreen} />
+      <Home.Screen name="SignUp" component={SignUpScreen} />
+    </Home.Navigator>
+  );
+}
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
   const [initialNavigationState, setInitialNavigationState] = React.useState();
   const containerRef = React.useRef();
   const { getInitialState } = useLinking(containerRef);
-
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -82,26 +93,26 @@ export default function App(props) {
         //asyncstorage에서 token 불러온다
         const value = await AsyncStorage.getItem("token");
         const parsedValue = JSON.parse(value);
+        console.log(parsedValue);
         state.userToken = parsedValue;
       } catch (err) {
-        console.log(error);
+        console.log(err);
       }
     }
     loadResourcesAndDataAsync();
     asyncLoad();
   }, []);
-
+  //const check = false;
   const authContext = React.useMemo(
     () => ({
-      signIn: async (data) => {
-        const new_token = data;
-        //토큰을 async에 저장해주자
-        await AsyncStorage.setItem("token", JSON.stringify(new_token));
-        dispatch({ type: "SIGN_IN", token: { new_token } });
+      signIn: async (email, pass) => {
+        //const new_token = data;
+        await AsyncStorage.setItem("token", JSON.stringify({ email, pass }));
+        dispatch({ type: "SIGN_IN", token: { email: email, pass: pass } });
       },
       signOut: () => dispatch({ type: "SIGN_OUT" }),
       signUp: async (data) => {
-        dispatch({ type: "SIGN_OUT", token: "dummy-auth-token" });
+        dispatch({ type: "SIGN_UP", token: "dummy-auth-token" });
       },
     }),
     []
@@ -112,21 +123,23 @@ export default function App(props) {
   } else {
     return (
       <AuthContext.Provider value={authContext}>
-        <View style={styles.container}>
-          {Platform.OS === "ios" && <StatusBar barStyle="dark-content" />}
-          <NavigationContainer
-            ref={containerRef}
-            initialState={initialNavigationState}
-          >
-            <Stack.Navigator>
-              {state.userToken == null ? (
-                <Stack.Screen name="Login" component={LoginScreen} />
-              ) : (
-                <Stack.Screen name="Root" component={BottomTabNavigator} />
-              )}
-            </Stack.Navigator>
-          </NavigationContainer>
-        </View>
+        <IDContext.Provider value={{ state }}>
+          <View style={styles.container}>
+            {Platform.OS === "ios" && <StatusBar barStyle="dark-content" />}
+            <NavigationContainer
+              ref={containerRef}
+              initialState={initialNavigationState}
+            >
+              <Stack.Navigator>
+                {state.userToken == null ? (
+                  <Stack.Screen name="Login" component={HomeStack} />
+                ) : (
+                  <Stack.Screen name="Root" component={BottomTabNavigator} />
+                )}
+              </Stack.Navigator>
+            </NavigationContainer>
+          </View>
+        </IDContext.Provider>
       </AuthContext.Provider>
     );
   }
