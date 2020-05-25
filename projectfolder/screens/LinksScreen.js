@@ -7,10 +7,11 @@ import { StyleSheet, Text, View } from "react-native";
 import { RectButton, ScrollView } from "react-native-gesture-handler";
 import { AsyncStorage } from "react-native";
 import AuthContext from "../hooks/AuthContext";
+import IDContext from "../hooks/IDContext";
 
 export default function LinksScreen() {
   const { signOut } = React.useContext(AuthContext);
-
+  const { state } = React.useContext(IDContext);
   async function pressLogOut() {
     await AsyncStorage.setItem("token", JSON.stringify(null));
     console.log("logout");
@@ -21,6 +22,7 @@ export default function LinksScreen() {
     const value = await AsyncStorage.getItem("token");
     const parsedValue = JSON.parse(value);
     console.log(parsedValue);
+    console.log(state.userToken);
   }
 
   return (

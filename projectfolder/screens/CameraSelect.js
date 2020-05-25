@@ -3,8 +3,12 @@ import * as WebBrowser from "expo-web-browser";
 import * as React from "react";
 import { StyleSheet, Text, View, Alert } from "react-native";
 import { RectButton, ScrollView } from "react-native-gesture-handler";
+import IDContext from "../hooks/IDContext";
 
 export default function CameraSelect({ navigation }) {
+  const { state } = React.useContext(IDContext);
+  const user_id = state.userToken;
+
   return (
     <ScrollView
       style={styles.container}
@@ -19,15 +23,25 @@ export default function CameraSelect({ navigation }) {
       <OptionButton
         icon="ios-qr-scanner"
         label="issn/isbn 스캔"
-        onPress={() => navigation.navigate("scan")}
+        onPress={() => navigation.navigate("scan", { user_id: user_id.email })}
       />
 
       <OptionButton
         icon="md-search"
-        label="책 제목으로 검색"
+        label="책 제목 검색해서 추가"
         onPress={() =>
-          WebBrowser.openBrowserAsync("http://www.kyobobook.co.kr/")
+          navigation.navigate("search", { user_id: user_id.email })
         }
+      />
+      <OptionButton
+        icon="md-create"
+        label="직접 추가"
+        onPress={() => console.log("직접 추가 버튼 누름")}
+      />
+      <OptionButton
+        icon="md-checkmark"
+        label="변수 확인용"
+        onPress={() => console.log(user_id)}
         isLastOption
       />
     </ScrollView>

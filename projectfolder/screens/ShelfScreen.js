@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import Books from "../components/Books";
 import axios from "axios";
+import my_ip from "../ipconfig.json";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default class ShelfScreen extends React.Component {
   state = {
@@ -19,11 +21,6 @@ export default class ShelfScreen extends React.Component {
 
   _onRefresh = () => {
     this.setState({ refreshing: true });
-    /*
-    wait(1000).then(() => {
-      this.setState({ refreshing: false });
-    });
-    */
     this.axiosCall().then((res) =>
       this.setState({ refreshing: false, books: res })
     );
@@ -37,7 +34,7 @@ export default class ShelfScreen extends React.Component {
 
   axiosCall = async () => {
     return axios
-      .get(`http://192.168.219.100:3000/api/book/1`, {
+      .get(`http://${my_ip.my_ip}:3000/api/book/${this.state.shelf_num}`, {
         params: {
           shelf_num: this.state.shelf_num,
         },
@@ -45,6 +42,11 @@ export default class ShelfScreen extends React.Component {
       .then((response) => {
         return response.data;
       });
+  };
+
+  onClick = () => {
+    console.log("book button clicked");
+    this.props.navigation.navigate("book");
   };
 
   render() {
@@ -57,24 +59,26 @@ export default class ShelfScreen extends React.Component {
           />
         }
       >
-        {this.state.books ? (
+        {this.state.books[0] ? (
           this.state.books.map((c) => {
             return (
-              <Books
-                key={c.id}
-                id={c.id}
-                title={c.title}
-                author={c.author}
-                price={c.price}
-                image={c.image}
-                publisher={c.publisher}
-              />
+              <TouchableOpacity key={c.id} onPress={this.onClick}>
+                <Books
+                  key={c.id}
+                  id={c.id}
+                  title={c.title}
+                  author={c.author}
+                  price={c.price}
+                  image={c.image}
+                  publisher={c.publisher}
+                  addButton={false}
+                />
+              </TouchableOpacity>
             );
           })
         ) : (
           <View style={styles.container}>
-            <Text style={styles.text}>책을 불러오고 있어요.</Text>
-            <Text style={styles.text}>오래 걸리면 인터넷 확인해라</Text>
+            <Text style={styles.text}>책장에 아직 책이 없어요</Text>
           </View>
         )}
       </ScrollView>

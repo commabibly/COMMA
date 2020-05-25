@@ -6,19 +6,34 @@ import { Text, View, StyleSheet, Image, TextInput, Alert } from "react-native";
 import { NavigationHelpersContext } from "@react-navigation/native";
 import { AsyncStorage } from "react-native";
 import AuthContext from "../hooks/AuthContext";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import axios from "axios";
+import my_ip from "../ipconfig.json";
 
-function LoginScreen() {
-  const [email, setEmail] = React.useState();
-  const [pass, setPass] = React.useState();
+function LoginScreen({ navigation }) {
+  const [email, setEmail] = React.useState("");
+  const [pass, setPass] = React.useState("");
 
   const { signIn } = React.useContext(AuthContext);
 
   async function loginButtonPress() {
-    if (email == "woodeng" && pass == "1234") {
-      signIn({ email, pass });
-    } else {
-      Alert.alert("ㅄ", "존재하지 않는 아이디이거나,\n 비밀번호가 틀렸습니다");
-    }
+    const data = {
+      email: email,
+      pass: pass,
+    };
+    axios
+      .post(`http://${my_ip.my_ip}:3000/api/sign`, { data })
+      .then((res) => {
+        if (res.data.loginresult == true) {
+          signIn(email, pass);
+        } else {
+          alert("이메일과 비밀번호를 확인해주세요");
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   }
 
   return (
@@ -37,6 +52,7 @@ function LoginScreen() {
           onChangeText={setPass}
         />
         <Button label="Log In" onPress={loginButtonPress} />
+        <Button label="Sign Up" onPress={() => navigation.navigate("SignUp")} />
       </View>
       <View style={styles.container}></View>
     </View>

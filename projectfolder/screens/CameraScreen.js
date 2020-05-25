@@ -4,6 +4,7 @@ import * as Permissions from "expo-permissions";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import axios from "axios";
 import Modal from "react-native-modal";
+import my_ip from "../ipconfig.json";
 
 const ID = "WVwSPjCxzQ4ncQ_j53Z5";
 const SECRET = "nDJRHH_aHP";
@@ -21,9 +22,9 @@ export default class CameraScreen extends React.Component {
       price: "",
       publisher: "",
       image: "",
-      user_id: "",
       shelf_num: "",
       shelf_name: "",
+      user_id: this.props.route.params.user_id,
       isModalVisible: false,
       shelfData: "",
     };
@@ -45,7 +46,7 @@ export default class CameraScreen extends React.Component {
   }
 
   addCustomer() {
-    const url = "http://192.168.219.100:3000/api/book";
+    const url = `http://${my_ip.my_ip}:3000/api/book`;
     const body = {
       title: this.state.title,
       author: this.state.author,
@@ -72,7 +73,10 @@ export default class CameraScreen extends React.Component {
   getShelfData = () => {
     axios({
       method: "get",
-      url: "http://192.168.219.100:3000/api/shelf",
+      url: `http://${my_ip.my_ip}:3000/api/shelf/${this.state.user_id}`,
+      params: {
+        user_id: this.state.user_id,
+      },
     }).then((response) => {
       this.setState({ shelfData: response.data });
     });
@@ -170,7 +174,7 @@ export default class CameraScreen extends React.Component {
           this.handleFormSubmit();
           alert(`'${res.data.items[0].title}'\n 책장에 추가되었습니다.`);
         } else {
-          alert("책장이 없는 것 같다");
+          alert("책장 고르세요");
         }
       });
   };
