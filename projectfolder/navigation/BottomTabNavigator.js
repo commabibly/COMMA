@@ -11,6 +11,8 @@ import CameraSelect from "../screens/CameraSelect";
 import BookShelfScreen from "../screens/BookShelfScreen";
 import TestScreen from "../screens/TestScreen";
 import { createStackNavigator } from "@react-navigation/stack";
+import BookSearchScreen from "../screens/BookSearchScreen";
+import BookDetailScreen from "../screens/BookDetailScreen";
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = "Home";
@@ -18,11 +20,12 @@ const INITIAL_ROUTE_NAME = "Home";
 const SelectStack = createStackNavigator();
 const ShelfStack = createStackNavigator();
 
-function ShelfStackScreen() {
+function ShelfStackScreen({ navigation }) {
   return (
     <ShelfStack.Navigator screenOptions={{ headerShown: false }}>
       <ShelfStack.Screen name="shelves" component={BookShelfScreen} />
       <ShelfStack.Screen name="shelf" component={ShelfScrren} />
+      <ShelfStack.Screen name="book" component={BookDetailScreen} />
     </ShelfStack.Navigator>
   );
 }
@@ -32,6 +35,7 @@ function SelectStackScreen() {
     <SelectStack.Navigator screenOptions={{ headerShown: false }}>
       <SelectStack.Screen name="choose" component={CameraSelect} />
       <SelectStack.Screen name="scan" component={CameraScreen} />
+      <SelectStack.Screen name="search" component={BookSearchScreen} />
     </SelectStack.Navigator>
   );
 }
@@ -103,5 +107,7 @@ function getHeaderTitle(route) {
       return "책장";
     case "BookShelfScreen":
       return "책장들";
+    case "Test":
+      return "실험실";
   }
 }
