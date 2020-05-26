@@ -8,6 +8,7 @@ import {
   TextInput,
   AsyncStorage,
   TouchableHighlightBase,
+  Dimensions,
 } from "react-native";
 import { Button } from "react-native-elements";
 import axios from "axios";
@@ -16,6 +17,7 @@ import Shelves from "../components/Shelves";
 import { ScrollView } from "react-native-gesture-handler";
 import my_ip from "../ipconfig.json";
 import IDContext from "../hooks/IDContext";
+const { width, height } = Dimensions.get("window");
 
 export default function BookShelfScreen({ navigation }) {
   const { state } = React.useContext(IDContext);
@@ -41,6 +43,14 @@ export default function BookShelfScreen({ navigation }) {
   const pressAdd = () => {
     console.log("Add pressed");
     toggleModal();
+  };
+
+  const pressEdit = () => {
+    console.log("edit pressed");
+  };
+
+  const pressDelete = () => {
+    console.log("delete pressed");
   };
 
   const pressMake = () => {
@@ -79,37 +89,39 @@ export default function BookShelfScreen({ navigation }) {
   };
 
   return (
-    <View>
+    <View style={{ backgroundColor: "#ffffff", height: height }}>
+      <Modal
+        isVisible={isModalVisible}
+        backdropOpacity={0.1}
+        onBackdropPress={toggleModal}
+      >
+        <View style={{ backgroundColor: "white" }}>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 25,
+              margin: 10,
+            }}
+          >
+            책장 이름을 입력하세요
+          </Text>
+          <TextInput
+            style={{
+              fontSize: 22,
+              marginHorizontal: 20,
+              backgroundColor: "#eeeeee",
+              marginBottom: 15,
+            }}
+            value={newShelfName}
+            onChangeText={setNewShelfName}
+          />
+          <Button title={"만들기"} onPress={pressMake} />
+        </View>
+      </Modal>
       <View style={styles.manage}>
         <Button title={"책장 추가"} onPress={pressAdd} />
-        <Modal
-          isVisible={isModalVisible}
-          backdropOpacity={0.1}
-          onBackdropPress={toggleModal}
-        >
-          <View style={{ backgroundColor: "white" }}>
-            <Text
-              style={{
-                textAlign: "center",
-                fontSize: 25,
-                margin: 10,
-              }}
-            >
-              책장 이름을 입력하세요
-            </Text>
-            <TextInput
-              style={{
-                fontSize: 22,
-                marginHorizontal: 20,
-                backgroundColor: "#eeeeee",
-                marginBottom: 15,
-              }}
-              value={newShelfName}
-              onChangeText={setNewShelfName}
-            />
-            <Button title={"만들기"} onPress={pressMake} />
-          </View>
-        </Modal>
+        <Button title={"책장 이름 수정"} onPress={pressEdit} />
+        <Button title={"책장 삭제"} onPress={pressDelete} />
         <Button title={"새로고침"} onPress={pressRefresh} />
       </View>
       <View>

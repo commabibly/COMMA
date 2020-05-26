@@ -16,8 +16,8 @@ export default function CameraSelect({ navigation }) {
     >
       <OptionButton
         icon="ios-camera"
-        label="책장 이미지 검색"
-        onPress={() => WebBrowser.openBrowserAsync("https://docs.expo.io")}
+        label="책장 이미지 검색 (beta)"
+        onPress={() => WebBrowser.openBrowserAsync("https://fmkorea.net")}
       />
 
       <OptionButton

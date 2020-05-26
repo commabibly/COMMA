@@ -30,11 +30,15 @@ export default function Books(props) {
   }
 
   function onPressAdd() {
-    apiPost();
-    Alert.alert(
-      "",
-      `[${props.title}]책이 [${props.shelfName}]에 추가되었습니다.`
-    );
+    if (props.shelfNum == null) {
+      Alert.alert("", "책장을 선택하세요");
+    } else {
+      apiPost();
+      Alert.alert(
+        "",
+        `[${props.title}]책이 [${props.shelfName}]에 추가되었습니다.`
+      );
+    }
   }
   return (
     <View style={styles.background}>

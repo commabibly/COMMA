@@ -1,6 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as React from "react";
-import { View, Text, Button, Image } from "react-native";
 
 import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/HomeScreen";
@@ -13,6 +12,8 @@ import TestScreen from "../screens/TestScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import BookSearchScreen from "../screens/BookSearchScreen";
 import BookDetailScreen from "../screens/BookDetailScreen";
+import ShopScreen from "../screens/ShopScreen";
+import { Text } from "react-native";
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = "Home";
@@ -52,7 +53,12 @@ export default function BottomTabNavigator({ navigation, route }) {
         name="BookShelfScreen"
         component={ShelfStackScreen}
         options={{
-          title: "BookShelfScreen",
+          title: "BookShelf",
+          /*
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ fontSize: 13 }}>sex</Text>
+          ),
+          */
           tabBarIcon: ({ focused }) => (
             <TabBarIcon focused={focused} name="ios-albums" />
           ),
@@ -62,9 +68,19 @@ export default function BottomTabNavigator({ navigation, route }) {
         name="Camera"
         component={SelectStackScreen}
         options={{
-          title: "Camera",
+          title: "Add",
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="ios-camera" />
+            <TabBarIcon focused={focused} name="md-add" />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="Shop"
+        component={ShopScreen}
+        options={{
+          title: "Shop",
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} name="md-basket" />
           ),
         }}
       />
@@ -84,7 +100,7 @@ export default function BottomTabNavigator({ navigation, route }) {
         options={{
           title: "Test",
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-settings" />
+            <TabBarIcon focused={focused} name="md-nuclear" />
           ),
         }}
       />
@@ -109,5 +125,7 @@ function getHeaderTitle(route) {
       return "책장들";
     case "Test":
       return "실험실";
+    case "Shop":
+      return "거래";
   }
 }

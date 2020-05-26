@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import Books from "../components/Books";
 import axios from "axios";
@@ -44,10 +45,10 @@ export default class ShelfScreen extends React.Component {
       });
   };
 
-  onClick = () => {
+  onClick(data) {
     console.log("book button clicked");
-    this.props.navigation.navigate("book");
-  };
+    this.props.navigation.navigate("book", { data });
+  }
 
   render() {
     return (
@@ -62,7 +63,7 @@ export default class ShelfScreen extends React.Component {
         {this.state.books[0] ? (
           this.state.books.map((c) => {
             return (
-              <TouchableOpacity key={c.id} onPress={this.onClick}>
+              <TouchableOpacity key={c.id} onPress={() => this.onClick(c)}>
                 <Books
                   key={c.id}
                   id={c.id}
@@ -78,7 +79,7 @@ export default class ShelfScreen extends React.Component {
           })
         ) : (
           <View style={styles.container}>
-            <Text style={styles.text}>책장에 아직 책이 없어요</Text>
+            <ActivityIndicator size="large" />
           </View>
         )}
       </ScrollView>

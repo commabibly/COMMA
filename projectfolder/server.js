@@ -44,6 +44,10 @@ app.use(cors()); //Cross Origin Resource Sharing
 
 connection.connect();
 
+app.get("/", (req, res) => {
+  res.send("hello world!");
+});
+
 app.get("/api/book/:shelf_num", (req, res) => {
   connection.query(
     `SELECT * FROM BOOK WHERE shelf_num=${req.query.shelf_num}`,
@@ -115,6 +119,7 @@ app.post("/api/sign", (req, res) => {
     }
   });
 });
+
 app.post("/api/register", (req, res) => {
   let sql = "INSERT INTO register VALUES (?,?)";
   let email2 = req.body.email2;
@@ -137,4 +142,23 @@ app.post("/api/register", (req, res) => {
     }
   });
 });
+
+app.delete("/api/books/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = `DELETE FROM BOOK WHERE id=${id}`;
+  connection.query(sql, (err, rows, fields) => {
+    console.log("delete done");
+  });
+});
+
+app.post("/api/books/:id", (req, res) => {
+  const sql = `UPDATE BOOK SET title='${req.body.title}', author='${req.body.author}', publisher='${req.body.publisher}' WHERE id=${req.body.id}`;
+  connection.query(sql, (err, rows, fields) => {
+    console.log("edit done");
+    if (err) {
+      console.log(err);
+    }
+  });
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`));

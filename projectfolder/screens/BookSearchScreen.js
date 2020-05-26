@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Dimensions, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Dimensions,
+  StyleSheet,
+  FlatList,
+} from "react-native";
 import { SearchBar, CheckBox } from "react-native-elements";
 import axios from "axios";
 import Books from "../components/Books";
@@ -17,7 +24,7 @@ export default function BookSearchScreen(props) {
   const [data, setData] = useState(null);
   const [shelfData, setShelfData] = useState(false);
   const [userId, setUserId] = useState();
-  const [shelfNum, setShelfNum] = useState();
+  const [shelfNum, setShelfNum] = useState(null);
   const [shelfName, setShelfName] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -38,7 +45,7 @@ export default function BookSearchScreen(props) {
   function searchApiCall() {
     axios
       .get(
-        `https://openapi.naver.com/v1/search/book_adv?d_titl=${searchVal}&display=20`,
+        `https://openapi.naver.com/v1/search/book_adv?d_titl=${searchVal}&display=10`,
         {
           headers: {
             "X-Naver-Client-Id": ID,
@@ -133,12 +140,13 @@ export default function BookSearchScreen(props) {
           <Text>현재 선택된 책장 : {shelfName}</Text>
         </View>
       </View>
-      <ScrollView>
+      <View style={{ height: height - 200 }}>
         {!data ? (
-          <View>
-            <Text>검색하세요</Text>
+          <View style={{ alignItems: "center", marginTop: 10 }}>
+            <Text>검색해보세요</Text>
           </View>
         ) : (
+          /*
           data.map((c, i) => {
             return (
               <Books
@@ -154,8 +162,25 @@ export default function BookSearchScreen(props) {
               />
             );
           })
+          */
+          <FlatList
+            data={data}
+            renderItem={({ item }) => (
+              <Books
+                title={parse(item.title)}
+                author={parse(item.author)}
+                price={item.price}
+                image={item.image}
+                publisher={item.publisher}
+                shelfName={shelfName}
+                shelfNum={shelfNum}
+                addButton={true}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
         )}
-      </ScrollView>
+      </View>
     </View>
   );
 }
