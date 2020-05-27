@@ -9,6 +9,7 @@ import {
   AsyncStorage,
   TouchableHighlightBase,
   Dimensions,
+  Alert,
 } from "react-native";
 import { Button } from "react-native-elements";
 import axios from "axios";
@@ -25,7 +26,8 @@ export default function BookShelfScreen({ navigation }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [newShelfName, setNewShelfName] = useState("");
   const user_id = state.userToken;
-
+  const [isDeleteMode, setDeleteMode] = useState(false);
+  const [dataForDel, setDataForDel] = useState("");
   useEffect(() => {
     shelfGetApiCall();
   }, []);
@@ -33,6 +35,17 @@ export default function BookShelfScreen({ navigation }) {
   const toggleModal = () => {
     setNewShelfName("");
     setModalVisible(!isModalVisible);
+  };
+
+  const onPressBook = (c) => {
+    if (isDeleteMode == false) {
+      navigation.navigate("shelf", {
+        shelf_num: c.shelf_num,
+      });
+    } else {
+      setDataForDel(c);
+      setModalVisible(!isModalVisible);
+    }
   };
 
   const pressRefresh = () => {
@@ -50,12 +63,24 @@ export default function BookShelfScreen({ navigation }) {
   };
 
   const pressDelete = () => {
-    console.log("delete pressed");
+    if (!isDeleteMode) {
+      //삭제모드일 때: 삭제 취소를 누르는 것임
+      Alert.alert("삭제할 책장을 클릭하세요");
+    }
+    setDeleteMode(!isDeleteMode);
+  };
+
+  const pressRealDelete = () => {
+    //해당 책장을 서버에서 지워준다
+    //console.log(dataForDel);
+    const url = `http://${my_ip.my_ip}:3000/api/shelf/${user_id.email}`;
+    const params = { id: user_id.email, shelf_num: dataForDel.shelf_num };
+    axios.delete(url, { data: params }).then(shelfGetApiCall());
+    toggleModal();
   };
 
   const pressMake = () => {
     console.log("Make pressed");
-    console.log(newShelfName);
     shelfPostApiCall();
     toggleModal();
   };
@@ -95,56 +120,104 @@ export default function BookShelfScreen({ navigation }) {
         backdropOpacity={0.1}
         onBackdropPress={toggleModal}
       >
-        <View style={{ backgroundColor: "white" }}>
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 25,
-              margin: 10,
-            }}
-          >
-            책장 이름을 입력하세요
-          </Text>
-          <TextInput
-            style={{
-              fontSize: 22,
-              marginHorizontal: 20,
-              backgroundColor: "#eeeeee",
-              marginBottom: 15,
-            }}
-            value={newShelfName}
-            onChangeText={setNewShelfName}
-          />
-          <Button title={"만들기"} onPress={pressMake} />
-        </View>
+        {!isDeleteMode ? (
+          <View style={{ backgroundColor: "white" }}>
+            <Text
+              style={{
+                textAlign: "center",
+                fontSize: 25,
+                margin: 10,
+              }}
+            >
+              책장 이름을 입력하세요
+            </Text>
+            <TextInput
+              style={{
+                fontSize: 22,
+                marginHorizontal: 20,
+                backgroundColor: "#eeeeee",
+                marginBottom: 15,
+              }}
+              value={newShelfName}
+              onChangeText={setNewShelfName}
+            />
+            <Button
+              style={{ margin: 3 }}
+              title={"만들기"}
+              onPress={pressMake}
+            />
+          </View>
+        ) : (
+          <View style={{ backgroundColor: "white" }}>
+            <Text
+              style={{
+                textAlign: "center",
+                fontSize: 25,
+                margin: 10,
+              }}
+            >
+              삭제하면 책장 안의 책들도 함께 삭제됩니다.
+            </Text>
+            <Button
+              style={{ margin: 3 }}
+              title={"삭제"}
+              onPress={pressRealDelete}
+            />
+            <Button
+              style={{ margin: 3 }}
+              title={"취소"}
+              onPress={toggleModal}
+            />
+          </View>
+        )}
       </Modal>
-      <View style={styles.manage}>
-        <Button title={"책장 추가"} onPress={pressAdd} />
-        <Button title={"책장 이름 수정"} onPress={pressEdit} />
-        <Button title={"책장 삭제"} onPress={pressDelete} />
-        <Button title={"새로고침"} onPress={pressRefresh} />
-      </View>
+      {isDeleteMode == false ? (
+        <View style={styles.manage}>
+          <Button title={"책장 추가"} onPress={pressAdd} />
+          <Button title={"책장 이름 수정"} onPress={pressEdit} />
+          <Button title={"책장 삭제"} onPress={pressDelete} />
+          <Button title={"새로고침"} onPress={pressRefresh} />
+        </View>
+      ) : (
+        <View style={styles.manage}>
+          <Button title={"책장 추가"} onPress={pressAdd} disabled={true} />
+          <Button
+            title={"책장 이름 수정"}
+            onPress={pressEdit}
+            disabled={true}
+          />
+          <Button title={"삭제 취소"} onPress={pressDelete} />
+          <Button title={"새로고침"} onPress={pressRefresh} />
+        </View>
+      )}
       <View>
         {shelves ? (
           shelves.map((c, i) => {
-            return (
+            return isDeleteMode == false ? (
               <Button
                 buttonStyle={{ backgroundColor: "#3498db" }}
                 style={{ margin: 5 }}
                 key={i}
                 title={c.shelf_name}
                 id={c.shelf_num}
-                onPress={() =>
-                  navigation.navigate("shelf", {
-                    shelf_num: c.shelf_num,
-                  })
-                }
+                onPress={() => onPressBook(c)}
+              />
+            ) : (
+              <Button
+                buttonStyle={{ backgroundColor: "#e74c3c" }}
+                style={{ margin: 5 }}
+                key={i}
+                title={c.shelf_name}
+                id={c.shelf_num}
+                onPress={() => onPressBook(c)}
               />
             );
             //return <Shelves key={i} name={c.shelf_name} />;
           })
         ) : (
-          <View></View>
+          <View>
+            <Text style={{ alignSelf: "center" }}>책장을 추가해 주세요.</Text>
+          </View>
         )}
       </View>
     </View>

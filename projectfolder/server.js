@@ -38,6 +38,7 @@ const connection = mysql.createConnection({
   password: conf.password,
   port: conf.port,
   database: conf.database,
+  multipleStatements: true,
 });
 
 app.use(cors()); //Cross Origin Resource Sharing
@@ -139,6 +140,21 @@ app.post("/api/register", (req, res) => {
         error: "duplicate EMAIL",
         code: 1,
       });
+    }
+  });
+});
+
+app.delete("/api/shelf/:id", (req, res) => {
+  const id = req.body.id;
+  const shelf_num = req.body.shelf_num;
+  params = [shelf_num, shelf_num];
+  const sql =
+    "DELETE FROM BookShelf WHERE shelf_num=?;DELETE FROM BOOK WHERE shelf_num=?";
+  connection.query(sql, params, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("delete done");
     }
   });
 });
