@@ -9,6 +9,7 @@ npm install (머시기)
 - expo-barcode-scanner //바코드 스캐너
 - react-native-modal //modal(팝업창 같은거)
 - react-native-elements //UI 구성할 때 씀
+- react-native-easy-toast //toast
 
 서버
 - cors
