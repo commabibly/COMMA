@@ -17,6 +17,7 @@ import ImageSearchScreen from "../screens/ImageSearchScreen";
 import { Text } from "react-native";
 
 import TestScreen2 from "../screens/TestScreen2";
+import TestScreen3 from "../screens/TestScreen3";
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = "Home";
@@ -49,7 +50,7 @@ function SelectStackScreen() {
 function TestStackScreen() {
   return (
     <TestStack.Navigator screenOptions={{ headerShown: false }}>
-      <TestStack.Screen name="test1" component={TestScreen} />
+      <TestStack.Screen name="test1" component={TestScreen3} />
       <TestStack.Screen name="test2" component={TestScreen2} />
     </TestStack.Navigator>
   );

@@ -15,6 +15,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
+//import Toast, { Duration } from "react-native-easy-toast";
 
 import Modal from "react-native-modal";
 import axios from "axios";
@@ -35,6 +36,11 @@ function TestScreen({ navigation }) {
     setMoveMode(!moveMode);
     //apiCall();
   };
+
+  function toastAppear(val) {
+    //클래스 컴포넌트로 바꿔서, toast를 띄우게 만들자.
+    console.log(`${val} shelf fixed`);
+  }
 
   useEffect(() => {
     apiCall();
@@ -62,6 +68,7 @@ function TestScreen({ navigation }) {
             name={c.id}
             pos={{ x: c.pos_x, y: c.pos_y }}
             nav={navigation}
+            func={toastAppear}
           />
         ))}
     </View>

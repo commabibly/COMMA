@@ -17,6 +17,8 @@ import axios from "axios";
 const url = `http://${my_ip.my_ip}:3000/api/test/`;
 
 export default function Draggable(props) {
+  const [show, setShow] = useState(true);
+  const opacity = useRef(new Animated.Value(1)).current;
   const pan = useRef(new Animated.ValueXY()).current;
   const panResponder = props.isMove
     ? useRef(
@@ -30,9 +32,10 @@ export default function Draggable(props) {
           },
           onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
           onPanResponderRelease: (e, gesture) => {
+            /*
             if (isDropArea(gesture) == true) {
               Alert.alert("삭제", "삭제하면 책장 안의 책도 삭제됨");
-            }
+            }*/
             pan.flattenOffset();
           },
         })
@@ -49,7 +52,13 @@ export default function Draggable(props) {
           onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
           onPanResponderRelease: (e, gesture) => {
             if (isDropArea(gesture) == true) {
-              Alert.alert("삭제", "삭제하면 책장 안의 책도 삭제됨");
+              props.func("del");
+              Animated.timing(opacity, {
+                toValue: 0,
+                duration: 1000,
+              }).start(() => {
+                setShow(false);
+              });
             }
             pan.flattenOffset();
           },
@@ -106,7 +115,7 @@ export default function Draggable(props) {
 
   const pressFix = () => {
     postCoord();
-    console.log(`${props.name} shelf fixed`);
+    props.func(props.name);
   };
 
   const pressEnter = () => {
@@ -128,6 +137,7 @@ export default function Draggable(props) {
         position: "absolute",
         backgroundColor: "#aaa69d",
         borderRadius: 5,
+        opacity: opacity,
       }}
       {...panResponder.panHandlers}
     >
