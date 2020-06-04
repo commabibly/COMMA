@@ -7,6 +7,7 @@ npm install (머시기)
 - express //web framework
 - axios //rest api 쓰기 편하게 하기 위함
 - expo-barcode-scanner //바코드 스캐너
+- expo-image-picker //이미지 고르게 해줌
 - react-native-modal //modal(팝업창 같은거)
 - react-native-elements //UI 구성할 때 씀
 - react-native-easy-toast //toast
