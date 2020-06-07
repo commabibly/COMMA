@@ -9,27 +9,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const data = fs.readFileSync("./database.json");
 const conf = JSON.parse(data);
-
-/*
-//종호가 만든거
-{
-  "host": "comma.c6a76bjjinod.ap-northeast-2.rds.amazonaws.com",
-  "user": "admin",
-  "password": "papa6985!",
-  "port": "3306",
-  "database": "management"
-}
-
-{
-  "host": "woodeng.csnc8dg1k5sn.ap-northeast-2.rds.amazonaws.com",
-  "user": "admin",
-  "password": "dnckd911216",
-  "port": "3306",
-  "database": "BOOKS"
-}
-
-*/
-
 const mysql = require("mysql");
 
 const connection = mysql.createConnection({
