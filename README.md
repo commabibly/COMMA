@@ -18,4 +18,9 @@ npm install (머시기)
 
 ipconfig.json에서 ip를 자기 ip로 바꾸고 실행하면 됨
 expo start
+
+
 node server.js
+
+아래 복사해서 붙여넣기 하면 한꺼번에 깔림
+npm install --save express axios expo-barcode-scanner expo-image-picker react-native-modal react-native-elements react-native-easy-toast cors mysql
